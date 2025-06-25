@@ -1,6 +1,6 @@
 # 🚁 Closest Chopper 🚁
 
-> Find out the closest Leonardo helicopter to your current location
+> FastAPI tool to find out the closest Leonardo helicopter to your current location
 
 ## ✅ TODOs
 
