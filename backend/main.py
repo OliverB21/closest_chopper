@@ -1,9 +1,11 @@
 import requests
 import json
 from geopy import distance
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 list_of_types = ["A101", "A109", "A119", "A139", "A149", "A159", "A169", "A189", "LYNX"]  # List of strings of all the aircraft types i.e. LYNX
-current_loc = (LAT, LON)  # Current location
+current_loc = (51.50137, -2.54238)  # Current location
 
 
 def find_helicopters(types: list):
@@ -58,7 +60,20 @@ def get_closest(list_of_helis: list):
     return closest
 
 
-if __name__ == "__main__":
-    all_helis = find_helicopters(list_of_types)
-    closest = get_closest(all_helis)
-    print(f"The closest Leonardo Helicopter to you right now is the {closest["t"]}, and it is {closest["dist"]:0.2f}km away!")
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.get("/closest_helicopter")
+def get_closest_helicopter():
+
+    helis = find_helicopters(list_of_types)
+    closest = get_closest(helis)
+
+    return closest

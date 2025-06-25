@@ -7,7 +7,7 @@
 - [x] Create basic program
 - [x] Initialize Git repository
 - [x] Write basic README
-- [ ] Tidy code to use JSON instead of lists of lists
+- [x] Tidy code to use JSON instead of lists of lists
 - [ ] Create a simple web UI
 - [ ] Comment and document the code
 - [ ] Add location information aside from distance away
