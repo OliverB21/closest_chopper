@@ -3,19 +3,19 @@ import json
 from geopy import distance
 
 list_of_types = ["A101", "A109", "A119", "A139", "A149", "A159", "A169", "A189", "LYNX"]  # List of strings of all the aircraft types i.e. LYNX
-current_loc = (INSERT_LATITUDE, INSERT_LONGITUDE)  # Current location
+current_loc = (LAT, LON)  # Current location
 
 
 def find_helicopters(types: list):
     '''
-    Function that takes a list of types and returns a list of lists, with the type, lat and long
+    Function that takes a list of types and returns a list of json objects returned by the API
     
     Inputs:
 
         types: list of strings that represent aircraft types i.e LYNX
     
     Outputs:
-        helis: list of lists, where each sublist is the type, followed by the latitude, followed by the longitude
+        helis: list of JSON objects
     '''
 
     helis = []
@@ -24,12 +24,11 @@ def find_helicopters(types: list):
         resp = requests.get(f"https://api.adsb.lol/v2/type/{heli_type}")
         resp_json = json.loads(resp.text)
         for ac in resp_json["ac"]:
-            try:
+            if "lat" not in ac:
+                print(f"INFO: Aircraft of type {ac["t"]} found, but no Lat/Lon provided")
+            else:
+                helis.append(ac)
                 print(f"INFO: Aircraft of type {ac["t"]} found")
-                helis.append([ac["t"], ac["lat"], ac["lon"]])
-            except:
-                print("INFO: Aircraft found but no Lat/Long provided")
-                pass
 
     return helis
 
@@ -46,20 +45,20 @@ def get_closest(list_of_helis: list):
     '''
 
     closest = list_of_helis[0]
-    init_distance = distance.geodesic(current_loc, (closest[1], closest[2])).km
-    closest.append(init_distance)  # Initialises the first item in the list as the closest
+    print(closest)
+    init_distance = distance.geodesic(current_loc, (closest["lat"], closest["lon"])).km
+    closest["dist"] = init_distance  # Initialises the first item in the list as the closest
 
     for heli in list_of_helis[1:]:
-        heli_distance = distance.geodesic(current_loc, (heli[1], heli[2])).km
-        heli.append(heli_distance)
-        if heli[3] < closest[3]:
+        heli_distance = distance.geodesic(current_loc, (heli["lat"], heli["lon"])).km
+        heli["dist"] = heli_distance
+        if heli["dist"] < closest["dist"]:
             closest = heli
 
     return closest
 
 
-
 if __name__ == "__main__":
     all_helis = find_helicopters(list_of_types)
     closest = get_closest(all_helis)
-    print(f"The closest Leonardo Helicopter to you right now is the {closest[0]}, and it is {closest[3]:0.2f}km away!")
+    print(f"The closest Leonardo Helicopter to you right now is the {closest["t"]}, and it is {closest["dist"]:0.2f}km away!")
