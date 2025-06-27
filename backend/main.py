@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 list_of_types = ["A101", "A109", "A119", "A139", "A149", "A159", "A169", "A189", "LYNX"]  # List of strings of all the aircraft types i.e. LYNX
-current_loc = (51.50137, -2.54238)  # Current location
+current_loc = (LAT, LON)  # Current location
 
 
 def find_helicopters(types: list):
@@ -47,7 +47,7 @@ def get_closest(list_of_helis: list):
     '''
 
     closest = list_of_helis[0]
-    print(closest)
+
     init_distance = distance.geodesic(current_loc, (closest["lat"], closest["lon"])).km
     closest["dist"] = init_distance  # Initialises the first item in the list as the closest
 
@@ -77,3 +77,8 @@ def get_closest_helicopter():
     closest = get_closest(helis)
 
     return closest
+
+
+if __name__ == "__main__":
+    print("This is the backend for the helicopter tracker. It is not meant to be run directly.")
+    print(get_closest_helicopter())
